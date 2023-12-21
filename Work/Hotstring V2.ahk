@@ -31,10 +31,14 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
+SettingsDir := "C:\Users\" A_UserName "\AutohotkeySetting\"
+SettingsFile := "C:\Users\" A_UserName "\AutohotkeySetting\Settings.ini"
+
 ; Checks is Settings.ini is created
-if !(InStr( FileExist("C:\Users\" A_UserName "\Autohotkey\"), "D"))
+if !(InStr( FileExist(SettingsDir), "D"))
     {
-        DirCreate "C:\Users\" A_UserName "\Autohotkey\"
+        DirCreate SettingsDir
+        IniWrite("Y",  SettingsFile, "Hotstrings", "hotstringFullOut")
     }
 
 ;======================================================= Hotstring Variant Changer =========================================================
@@ -43,14 +47,14 @@ if !(InStr( FileExist("C:\Users\" A_UserName "\Autohotkey\"), "D"))
 ; [Crtl] + [Alt] + [Shift] + [W]
 ^!+W::
     { 
-        if(IniRead("C:\Users\" A_UserName "\Autohotkey\Settings.ini", "Hotstrings","hotstringFullOut") = "N")
+        if(IniRead(SettingsFile, "Hotstrings","hotstringFullOut") = "N")
         {
-        IniWrite("Y",  "C:\Users\" A_UserName "\Autohotkey\Settings.ini", "Hotstrings", "hotstringFullOut")
+        IniWrite("Y",  SettingsFile, "Hotstrings", "hotstringFullOut")
         Reload
         }
         else
         {
-        IniWrite("N",  "C:\Users\" A_UserName "\Autohotkey\Settings.ini", "Hotstrings", "hotstringFullOut")
+        IniWrite("N",  SettingsFile, "Hotstrings", "hotstringFullOut")
         Reload
         }
     } 
@@ -399,11 +403,11 @@ send chr(0x00B0)
 ;================================================================ Functions ===============================================================
 LongOrShort(long, short) ; Gets two inputs and depending on de current value saved in C:\Users\$UserName\Autohotkey\Settings.ini wil enter long or short hotstrings
 {
-    if(IniRead("C:\Users\" A_UserName "\Autohotkey\Settings.ini", "Hotstrings","hotstringFullOut") = "N")
+    if(IniRead(SettingsFile, "Hotstrings","hotstringFullOut") = "N")
         {
             send(short)
         }
-    else if(IniRead("C:\Users\" A_UserName "\Autohotkey\Settings.ini", "Hotstrings","hotstringFullOut") = "Y")
+    else if(IniRead(SettingsFile, "Hotstrings","hotstringFullOut") = "Y")
         {
             send(long)
         }
@@ -436,4 +440,6 @@ TimeBasedGreeting(greeting)
         send greeting
     }
 }
+
+^x:: MsgBox("test")
 
