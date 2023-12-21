@@ -1,9 +1,12 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#Warn VarUnset, MsgBox
 
 ; Spotify API credentials
-clientID := "your_client_id"
-clientSecret := "your_client_secret"
+SettingsFile := "C:\Users\" A_UserName "\AutohotkeySetting\SpotifyClient.ini"
+
+clientID := IniRead(SettingsFile, "Client", "ID")
+clientSecret := IniRead(SettingsFile, "Client", "Secret")
 
 ; Function to get access token
 GetAccessToken(clientID, clientSecret) {
