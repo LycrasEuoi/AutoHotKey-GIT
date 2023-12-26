@@ -1,16 +1,14 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-#Warn VarUnset, MsgBox
 
 ; Spotify API credentials
-SettingsFile := "C:\Users\" A_UserName "\AutohotkeySetting\SpotifyClient.ini"
-
-clientID := IniRead(SettingsFile, "Client", "ID")
-clientSecret := IniRead(SettingsFile, "Client", "Secret")
+SettingsFile := "C:\Users\" A_UserName "\AutohotkeySettings\Cred.ini"
+clientID := IniRead(SettingsFile, "Spotify", "ID")
+clientSecret := IniRead(SettingsFile, "Spotify", "Secret")
 
 ; Function to get access token
 GetAccessToken(clientID, clientSecret) {
-    authURL := "https://accounts.spotify.com/api/token"
+    authURL := "https://api.spotify.com/api/token"
     clientCreds := clientID . ":" . clientSecret
     clientCredsB64 := Base64Encode(clientCreds)
 
@@ -22,7 +20,7 @@ GetAccessToken(clientID, clientSecret) {
     data := "grant_type=client_credentials"
 
     ; Make a POST request
-    httpRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    httpRequest := ComObject("WinHttp.WinHttpRequest.5.1")
     httpRequest.Open("POST", authURL, false)
     httpRequest.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded")
     httpRequest.SetRequestHeader("Authorization", "Basic " . clientCredsB64)
@@ -30,10 +28,13 @@ GetAccessToken(clientID, clientSecret) {
 
     if (httpRequest.Status != 200) {
         MsgBox("Could not authenticate client.")
+        MsgBox("The response status code is: " httpRequest.Status "`n Data was: " data)
+
         return
     }
 
     response := httpRequest.ResponseText
+
     ; Simple parsing for access token (assuming response structure is simple)
     accessToken := RegExReplace(response, ".*" "access_token" ":" "(.*?)" ".*", "$1")
     return accessToken
@@ -41,12 +42,26 @@ GetAccessToken(clientID, clientSecret) {
 
 ; Function to Base64 encode
 Base64Encode(data) {
-    VarSetCapacity(var, StrPut(data, "UTF-16") * 2, 0)
-    StrPut(data, &var, "UTF-16")
-    DllCall("Crypt32.dll\CryptBinaryToStringW", "ptr", &var, "uint", StrLen(data) * 2, "uint", 1, "ptr", 0, "uint*", size := 0)
-    VarSetCapacity(b64, size * 2, 0)
-    DllCall("Crypt32.dll\CryptBinaryToStringW", "ptr", &var, "uint", StrLen(data) * 2, "uint", 1, "ptr", &b64, "uint*", size)
-    return StrGet(&b64, "UTF-16")
+    ; Calculate the required size for the buffer
+    varSize := StrPut(data, "UTF-16") * 2
+    var := Buffer(varSize)
+
+    ; Copy the string into the buffer
+    StrPut(data, var, "UTF-16")
+
+    ; Call the DLL function to get the required size for the Base64 string
+    size := 0
+    DllCall("Crypt32.dll\CryptBinaryToStringW", "ptr", var.ptr, "uint", StrLen(data) * 2, "uint", 1, "ptr", 0, "uint*", size)
+
+    ; Allocate buffer for the Base64 string
+    b64 := Buffer(size * 2)
+
+    ; Call the DLL function again to get the Base64 string
+    DllCall("Crypt32.dll\CryptBinaryToStringW", "ptr", var.ptr, "uint", StrLen(data) * 2, "uint", 1, "ptr", b64.ptr, "uint*", size)
+
+    ; Return the Base64 string
+    returnB64 := StrGet(b64, "UTF-16")
+    return returnB64
 }
 
 ; Main function
