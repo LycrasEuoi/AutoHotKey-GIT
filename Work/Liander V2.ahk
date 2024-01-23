@@ -53,8 +53,8 @@ MsgBox("The script has been succesfully executed", "Liander Script","T10")
 
 
 ; Search on a Google
-; [Crtl] + [Alt] + [C]
-^!c::
+; [Crtl] + [Shift] + [C]
+^+c::
 {
     Send "^c" ; Copy's selected text tot A_Clipboard
     Sleep 100 ; Pause for a little
