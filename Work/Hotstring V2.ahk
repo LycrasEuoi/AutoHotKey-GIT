@@ -441,5 +441,4 @@ TimeBasedGreeting(greeting)
     }
 }
 
-^x:: MsgBox("test")
 

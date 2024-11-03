@@ -36,6 +36,31 @@ MsgBox("The script has been succesfully executed", "Liander Script","T10")
 
 ;================================================================ Shortcuts ================================================================
 
+; Create a ChatGPT prompt
+^+?::
+{
+    Trigger := AdditionalTriggerHandeling()
+
+    if (Trigger = "m")
+        {
+            ChatGPT_Prompts("Verbeter de spelling en zinsbouw van de onderstaande e-mail, zonder de betekenis en gedachten aan te passen. Hanteer een schrijfstijl die past bij een engineer en gebruik semi-formeel taalgebruik.`rHier is de email:`"`r")
+        }
+    else if (Trigger = "s")
+        {
+            ChatGPT_Prompts("Samenvatting van de e-mail:`r`r1. Inleiding tot het onderwerp van de e-mail.`r2. Belangrijkste punten of problemen die worden besproken.`r3. Eventuele relevante details die in de e-mail staan vermeld.`r4. Actielijst voor de engineer, inclusief taken, deadlines en verantwoordelijkheden.`r`r Indien de e-mail meer informatie bevat, zal de samenvatting worden uitgebreid om alle relevante details en actiepunten te omvatten.`r Hier is de email:`"`r")
+        }
+}
+
+
+; Search on a Google
+; [Crtl] + [Shift] + [C]
+^+c::
+{
+    Send "^c" ; Copy's selected text tot A_Clipboard
+    Sleep 100 ; Pause for a little
+    Run ("https://www.google.com/search?q=" A_Clipboard) ; Search the selected text on google
+}
+
 ; Search on a choosen website
 ; [Crtl] + [Shift] + [Alt] + [S]
 ^+!s::
@@ -44,13 +69,13 @@ MsgBox("The script has been succesfully executed", "Liander Script","T10")
     Trigger := AdditionalTriggerHandeling()
 
     ; Secondary trigger [c]
-    if (Trigger = "c")
-    {
-        Send "^c" ; Copy's selected text tot A_Clipboard
-        Sleep 100 ; Pause for a little
-        Run ("https://www.google.com/search?q=" A_Clipboard) ; Search the selected text on google
-        
-    }
+    if (Trigger = "i")
+        {
+            Send "^c" ; Copy's selected text tot A_Clipboard
+            Sleep 100 ; Pause for a little
+            Run ("https://intranet.alliander.com/search?q=" A_Clipboard) ; Search the selected text on google
+
+        }
     ; Secondary trigger [b]
     else if (Trigger = "b") {
         Send "^c" ; Copy's selected text tot A_Clipboard
@@ -63,7 +88,7 @@ MsgBox("The script has been succesfully executed", "Liander Script","T10")
 
 ; Open Media
 ; [Crtl] + [Alt] + [m]
-^+m::
+^m::
 {
     ; Allow for a secondary trigger after the keybind
     Trigger := AdditionalTriggerHandeling()
@@ -172,3 +197,10 @@ AdditionalTriggerHandeling()
     return TriggerHandler.Input
 }
 
+ChatGPT_Prompts(Prompt)
+{
+    Send "^c"
+    Sleep 100
+    New_Clipboard := Prompt A_Clipboard "`""
+    A_Clipboard := New_Clipboard
+}
