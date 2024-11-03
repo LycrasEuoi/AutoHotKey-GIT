@@ -49,8 +49,8 @@ MsgBox("The script has been succesfully executed", "Liander Script","T10")
 }
 
 ; Open Media
-; [Crtl] + [Alt] + [m]
-^+m::
+; [Crtl] + [shift] + [M]
+^+M::
 {
     ; Allow for a secondary trigger after the keybind
     Trigger := AdditionalTriggerHandeling()
@@ -126,6 +126,11 @@ if !(ProcessExist("PowerToys.AlwaysOnTop.exe")){
     ProcessClose(ProcessExist("PowerToys.Settings.exe"))
     Sleep 100
     Run("C:\Program Files\PowerToys\PowerToys.exe")
+}
+
+^+A::
+{
+    Run "http://172.233.60.193/add_to_playlist"
 }
 
 ;================================================================ Functions ================================================================
